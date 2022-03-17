@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,9 +34,12 @@ public class View extends javax.swing.JFrame {
 
     private FileNameExtensionFilter f = new FileNameExtensionFilter("*.CSV (Separados por coma)", "csv");
     private static File archivo;
-    private static String nombre[];
+    
     private static String m[][];
+    
     private static Integer cantidad[];
+    private static String nombre[];
+    private static ChartPanel chpanel;
 
     public View() {
         initComponents();
@@ -219,8 +223,9 @@ public class View extends javax.swing.JFrame {
         jlbtitulo2.setText("Dirección de Orden:");
         getContentPane().add(jlbtitulo2, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, 170, 30));
 
+        jpgrafica.setBackground(new java.awt.Color(0, 51, 51));
         jpgrafica.setLayout(new java.awt.BorderLayout());
-        getContentPane().add(jpgrafica, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 170, 550, 400));
+        getContentPane().add(jpgrafica, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 590, 410));
 
         jLabel2.setBackground(new java.awt.Color(102, 102, 102));
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -273,7 +278,6 @@ public class View extends javax.swing.JFrame {
         ImageIcon icon = new ImageIcon("src/practicados/img/generar 2.png");
         btngenerar.setIcon(icon);
 
-        // TODO add your handling code here:
     }//GEN-LAST:event_btngenerarMouseEntered
 
     private void btngenerarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btngenerarMouseExited
@@ -316,7 +320,9 @@ public class View extends javax.swing.JFrame {
 
         // TODO add your handling code here:
     }//GEN-LAST:event_btnordenarMouseExited
-    //Metodo que carga los datos del CSV a la variable texto-----------------------------------------------------------------
+ 
+    
+//Metodo que carga los datos del CSV a la variable texto-----------------------------------------------------------------
     static String cargaDatos(File f) throws IOException {
 
         String texto = "";
@@ -394,7 +400,7 @@ public class View extends javax.swing.JFrame {
                 }
                 System.out.println();
             }
-
+            //Separa la matriz global en dos vectores de string y enteros
             System.out.println();
             nombre = separarNombre(m);
             for (int i = 1; i < m.length; i++) {
@@ -406,8 +412,8 @@ public class View extends javax.swing.JFrame {
                 System.out.print(cantidad[i] + "\t");
 
             }
-            
-            //generarGrafica();
+            jpgrafica.removeAll();
+            generarGrafica();
             
                        
 
@@ -455,17 +461,19 @@ public class View extends javax.swing.JFrame {
     private void generarGrafica() {
         DefaultCategoryDataset datos = new DefaultCategoryDataset();
 
-        for (int i = 1; i < 10; i++) {
-            datos.setValue(cantidad[i], "Cantidad", nombre[i]);
+        for (int i = 1; i < cantidad.length; i++) {
+            datos.setValue(cantidad[i], nombre[i], " ");
         }
-
+        
         JFreeChart grafica_barras = ChartFactory.createBarChart("Habitantes", "Paises", "Cantidad", datos, PlotOrientation.VERTICAL, true, true, false);
-
-        ChartPanel chpanel = new ChartPanel(grafica_barras);
+        
+        chpanel = new ChartPanel(grafica_barras);
+        
         chpanel.setMouseWheelEnabled(true);
-        chpanel.setPreferredSize(new Dimension(530, 380));
+        chpanel.setPreferredSize(new Dimension(550, 400));
         
         jpgrafica.add(chpanel,BorderLayout.NORTH);
+       
         pack();
         repaint();
         
@@ -474,6 +482,7 @@ public class View extends javax.swing.JFrame {
     private void btnordenarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnordenarMouseClicked
         
         ordenarMatrizBurbble();
+        
             System.out.println();
             for (int i = 1; i < m.length; i++) {
                 System.out.println(nombre[i] + "\t ");
@@ -482,6 +491,8 @@ public class View extends javax.swing.JFrame {
             for (int i = 1; i < m.length; i++) {
                 System.out.println(cantidad[i] + "\t");
             }
+       
+            jpgrafica.removeAll();
         generarGrafica();
         
         
