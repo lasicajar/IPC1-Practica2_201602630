@@ -25,6 +25,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import static practicados.View.cantidad;
 
 /**
  *
@@ -32,14 +33,15 @@ import org.jfree.data.category.DefaultCategoryDataset;
  */
 public class View extends javax.swing.JFrame {
 
-    private FileNameExtensionFilter f = new FileNameExtensionFilter("*.CSV (Separados por coma)", "csv");
-    private static File archivo;
-    
-    private static String m[][];
-    
-    private static Integer cantidad[];
-    private static String nombre[];
-    private static ChartPanel chpanel;
+    protected Thread hilo;
+    protected FileNameExtensionFilter f = new FileNameExtensionFilter("*.CSV (Separados por coma)", "csv");
+    protected static File archivo;
+
+    protected static String m[][];
+
+    protected static Integer cantidad[];
+    protected static String nombre[];
+    protected static ChartPanel chpanel;
 
     public View() {
         initComponents();
@@ -70,6 +72,7 @@ public class View extends javax.swing.JFrame {
         jlbtitulo1 = new javax.swing.JLabel();
         jlbtitulo2 = new javax.swing.JLabel();
         jpgrafica = new javax.swing.JPanel();
+        btnlimpiar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -227,6 +230,14 @@ public class View extends javax.swing.JFrame {
         jpgrafica.setLayout(new java.awt.BorderLayout());
         getContentPane().add(jpgrafica, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 590, 410));
 
+        btnlimpiar.setText("limpi");
+        btnlimpiar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnlimpiarMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnlimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 500, -1, -1));
+
         jLabel2.setBackground(new java.awt.Color(102, 102, 102));
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/practicados/img/bg.png"))); // NOI18N
@@ -320,8 +331,7 @@ public class View extends javax.swing.JFrame {
 
         // TODO add your handling code here:
     }//GEN-LAST:event_btnordenarMouseExited
- 
-    
+
 //Metodo que carga los datos del CSV a la variable texto-----------------------------------------------------------------
     static String cargaDatos(File f) throws IOException {
 
@@ -414,8 +424,6 @@ public class View extends javax.swing.JFrame {
             }
             jpgrafica.removeAll();
             generarGrafica();
-            
-                       
 
         } catch (IOException ex) {
             Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
@@ -439,66 +447,90 @@ public class View extends javax.swing.JFrame {
     }//GEN-LAST:event_rbtnInsertionActionPerformed
 
 //METODO ORDENAR MATRIZ EN BURBBLE SORT-----------------------------------------------------------------------------
-    static void ordenarMatrizBurbble() {
-        for (int i = 1; i < cantidad.length; i++) {
-            for (int j = 1; j < cantidad.length - 1; j++) {
-                if (cantidad[j] < cantidad[j + 1]) {
-                    //Intercambio de valores enteros
-                    Integer temp = cantidad[j];
-                    cantidad[j] = cantidad[j + 1];
-                    cantidad[j + 1] = temp;
-                    //Intercambio de nombres
-                    String tempnombre = nombre[j];
-                    nombre[j] = nombre[j + 1];
-                    nombre[j + 1] = tempnombre;
+    public void ordenarMatrizBurbble() throws InterruptedException {
+
+        hilo = new Thread() {
+            @Override
+            public void run() {
+                for (int i = 1; i < cantidad.length; i++) {
+                    System.out.print(cantidad[i] + nombre[i]);
+                    generarGrafica();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    for (int j = 1; j < cantidad.length - 1; j++) {
+                        if (cantidad[j] < cantidad[j + 1]) {
+                            //Intercambio de valores enteros
+                            Integer temp = cantidad[j];
+                            cantidad[j] = cantidad[j + 1];
+                            cantidad[j + 1] = temp;
+                            //Intercambio de nombres
+                            String tempnombre = nombre[j];
+                            nombre[j] = nombre[j + 1];
+                            nombre[j + 1] = tempnombre;
+                        }
+                    }
+                    limpiarJpanel();
                 }
             }
-        }
-
+        };
+        
+        hilo.start();
     }
     //Metodo para generar la gráfica 
 
-    private void generarGrafica() {
+    public void generarGrafica() {
+
         DefaultCategoryDataset datos = new DefaultCategoryDataset();
 
         for (int i = 1; i < cantidad.length; i++) {
             datos.setValue(cantidad[i], nombre[i], " ");
         }
-        
+
         JFreeChart grafica_barras = ChartFactory.createBarChart("Habitantes", "Paises", "Cantidad", datos, PlotOrientation.VERTICAL, true, true, false);
-        
+
         chpanel = new ChartPanel(grafica_barras);
-        
+
         chpanel.setMouseWheelEnabled(true);
         chpanel.setPreferredSize(new Dimension(550, 400));
-        
-        jpgrafica.add(chpanel,BorderLayout.NORTH);
-       
+
+        jpgrafica.add(chpanel, BorderLayout.NORTH);
+
         pack();
         repaint();
         
+
+        System.out.println("se genero la grafica");
+
+    }
+
+    void limpiarJpanel() {
+        jpgrafica.removeAll();
+        jpgrafica.revalidate();
     }
 
     private void btnordenarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnordenarMouseClicked
-        
-        ordenarMatrizBurbble();
-        
-            System.out.println();
-            for (int i = 1; i < m.length; i++) {
-                System.out.println(nombre[i] + "\t ");
-            }
-            System.out.println();
-            for (int i = 1; i < m.length; i++) {
-                System.out.println(cantidad[i] + "\t");
-            }
-       
-            jpgrafica.removeAll();
-        generarGrafica();
-        
-        
-        
-        // TODO add your handling code here:
+
+        try {
+
+            ordenarMatrizBurbble();
+
+        } catch (InterruptedException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }//GEN-LAST:event_btnordenarMouseClicked
+
+    private void btnlimpiarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnlimpiarMouseClicked
+        jpgrafica.removeAll();
+        jpgrafica.revalidate();
+        System.out.println("se limpia");
+
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnlimpiarMouseClicked
 
     /**
      * @param args the command line arguments
@@ -530,7 +562,6 @@ public class View extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-
                 new View().setVisible(true);
             }
         });
@@ -541,6 +572,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel btngenerar;
     private javax.swing.ButtonGroup btngroupDireccion;
     private javax.swing.ButtonGroup btngroupMetodo;
+    private javax.swing.JButton btnlimpiar;
     private javax.swing.JLabel btnordenar;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -552,11 +584,20 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jlbtitulo;
     private javax.swing.JLabel jlbtitulo1;
     private javax.swing.JLabel jlbtitulo2;
-    private javax.swing.JPanel jpgrafica;
+    protected static javax.swing.JPanel jpgrafica;
     private javax.swing.JTextField jtxtUrl;
     private javax.swing.JRadioButton rbtnBubble;
     private javax.swing.JRadioButton rbtnInsertion;
     private javax.swing.JRadioButton rbtnasc;
     private javax.swing.JRadioButton rbtndesc;
     // End of variables declaration//GEN-END:variables
+}
+
+class HiloBurbuja extends Thread {
+
+//    View vg = new View();
+    @Override
+    public void run() {
+    }
+
 }
