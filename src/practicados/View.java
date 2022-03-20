@@ -14,11 +14,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -243,7 +240,11 @@ public class View extends javax.swing.JFrame {
         jpgrafica.setLayout(new java.awt.BorderLayout());
         getContentPane().add(jpgrafica, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 590, 410));
 
+        btnreporte.setBackground(new java.awt.Color(204, 204, 204));
+        btnreporte.setFont(new java.awt.Font("Segoe Script", 1, 14)); // NOI18N
+        btnreporte.setForeground(new java.awt.Color(0, 51, 51));
         btnreporte.setText("Reporte");
+        btnreporte.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnreporte.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnreporteMouseClicked(evt);
@@ -563,6 +564,7 @@ public class View extends javax.swing.JFrame {
                             Integer temp = cantidad[j];
                             cantidad[j] = cantidad[j + 1];
                             cantidad[j + 1] = temp;
+                           
                             //Intercambio de nombres
                             String tempnombre = nombre[j];
                             nombre[j] = nombre[j + 1];
@@ -579,6 +581,102 @@ public class View extends javax.swing.JFrame {
                     }
                     // movimientos++;
 
+                }
+                tiempoGrafica = false;
+                reloj.stop();
+                JOptionPane.showMessageDialog(null, "Ordenamiento finalizado con: " + movimientos + " movimientos!!!", "Grafica Ordenada", JOptionPane.INFORMATION_MESSAGE);
+                btnreporte.setEnabled(true);
+            }
+        };
+        hilo.start();
+    }
+
+    //Metodo de ordenamiento Inserción en modo Ascendente---------------------------------------------------------------------------
+    public void ordenarMatrizInsertionAsc() throws InterruptedException {
+        hilo = new Thread() {
+            @Override
+            public void run() {
+                int editar = 1;
+                for (int i = 2; i < cantidad.length; i++) {
+                   
+                    int aux = cantidad[i];
+                    String auxnom = nombre[i];
+                    
+                    for (int j = i; j > 1; j--) {
+                        generarGrafica();
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                        } 
+                        if (cantidad[j]<cantidad[j-1]) {
+                            aux = cantidad[j];
+                            cantidad[j]=cantidad[j-1];
+                            cantidad[j-1]=aux;
+                            
+                            auxnom = nombre[j];
+                            nombre[j] = nombre[j - 1];
+                            nombre[j - 1] = auxnom;
+                           
+                            movimientos++;
+                        }
+                        limpiarJpanel();
+                        lblpasos.setText(Integer.toString(movimientos));
+                    }
+
+                    
+                }
+                for (int i = 0; i < cantidad.length; i++) {
+                    System.out.println(nombre[i]+" "+ cantidad[i]);
+                                       
+                }
+                tiempoGrafica = false;
+                reloj.stop();
+                JOptionPane.showMessageDialog(null, "Ordenamiento finalizado con: " + movimientos + " movimientos!!!", "Grafica Ordenada", JOptionPane.INFORMATION_MESSAGE);
+                btnreporte.setEnabled(true);
+            }
+        };
+        hilo.start();
+    }
+    
+    //Metodo de ordenamiento Inserción en modo Descendente---------------------------------------------------------------------------
+    public void ordenarMatrizInsertionDesc() throws InterruptedException {
+        hilo = new Thread() {
+            @Override
+            public void run() {
+                int editar = 1;
+                for (int i = 2; i < cantidad.length; i++) {
+                   
+                    int aux = cantidad[i];
+                    String auxnom = nombre[i];
+                    
+                    for (int j = i; j > 1; j--) {
+                        generarGrafica();
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                        } 
+                        if (cantidad[j]>cantidad[j-1]) {
+                            aux = cantidad[j];
+                            cantidad[j]=cantidad[j-1];
+                            cantidad[j-1]=aux;
+                            
+                            auxnom = nombre[j];
+                            nombre[j] = nombre[j - 1];
+                            nombre[j - 1] = auxnom;
+                           
+                            movimientos++;
+                        }
+                        limpiarJpanel();
+                        lblpasos.setText(Integer.toString(movimientos));
+                    }
+
+                    
+                }
+                for (int i = 0; i < cantidad.length; i++) {
+                    System.out.println(nombre[i]+" "+ cantidad[i]);
+                                       
                 }
                 tiempoGrafica = false;
                 reloj.stop();
@@ -642,24 +740,40 @@ public class View extends javax.swing.JFrame {
     }
 //Boton que comienza los hilos del ordenamiento y del tiempo---------------------------------------------------------------------
     private void btnordenarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnordenarMouseClicked
+        movimientos = 0;
+                    
+        if (rbtnasc.isSelected()&&rbtnBubble.isSelected()) {
+            try {
+                ordenarMatrizBurbbleAsc();
+                relojito();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-        if (rbtnasc.isSelected()) {
+        } else if (rbtndesc.isSelected()&&rbtnBubble.isSelected()) {
             try {
-            ordenarMatrizBurbbleAsc();
-            relojito();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-        }
-            
-        }else if (rbtndesc.isSelected()) {
+                ordenarMatrizBurbble();
+                relojito();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else if (rbtnasc.isSelected()&&rbtnInsertion.isSelected()) {
             try {
-            ordenarMatrizBurbble();
-            relojito();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                ordenarMatrizInsertionAsc();
+                relojito();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else if (rbtndesc.isSelected()&&rbtnInsertion.isSelected()) {
+            try {
+                ordenarMatrizInsertionDesc();
+                relojito();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        }else{
-        JOptionPane.showMessageDialog(null,  "Seleccione un valor de ordenamiento","Error de Seleccion", JOptionPane.WARNING_MESSAGE);
+        else {
+            JOptionPane.showMessageDialog(null, "Seleccione valores de ordenamiento...", "Error de Seleccion", JOptionPane.WARNING_MESSAGE);
         }
         
 
