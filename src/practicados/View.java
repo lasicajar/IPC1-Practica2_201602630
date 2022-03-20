@@ -34,14 +34,20 @@ import static practicados.View.cantidad;
 public class View extends javax.swing.JFrame {
 
     protected Thread hilo;
+    protected Thread reloj;
     protected FileNameExtensionFilter f = new FileNameExtensionFilter("*.CSV (Separados por coma)", "csv");
     protected static File archivo;
 
     protected static String m[][];
+    protected static String mdesordenada[][];
+    protected static String valorx;
+    protected static String valory;
 
     protected static Integer cantidad[];
+    protected static Integer movimientos = 0;
     protected static String nombre[];
     protected static ChartPanel chpanel;
+    protected static Boolean tiempoGrafica;
 
     public View() {
         initComponents();
@@ -72,7 +78,14 @@ public class View extends javax.swing.JFrame {
         jlbtitulo1 = new javax.swing.JLabel();
         jlbtitulo2 = new javax.swing.JLabel();
         jpgrafica = new javax.swing.JPanel();
-        btnlimpiar = new javax.swing.JButton();
+        btnreporte = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        lblpasos = new javax.swing.JLabel();
+        lblmin = new javax.swing.JLabel();
+        lblseg = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -85,7 +98,7 @@ public class View extends javax.swing.JFrame {
         jlbtitulo.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jlbtitulo.setForeground(new java.awt.Color(255, 255, 255));
         jlbtitulo.setText("Grafico");
-        getContentPane().add(jlbtitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 130, 90, 30));
+        getContentPane().add(jlbtitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, 140, 30));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/practicados/img/1.png"))); // NOI18N
         jLabel3.setText("jLabel3");
@@ -230,13 +243,48 @@ public class View extends javax.swing.JFrame {
         jpgrafica.setLayout(new java.awt.BorderLayout());
         getContentPane().add(jpgrafica, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 590, 410));
 
-        btnlimpiar.setText("limpi");
-        btnlimpiar.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnreporte.setText("Reporte");
+        btnreporte.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnlimpiarMouseClicked(evt);
+                btnreporteMouseClicked(evt);
             }
         });
-        getContentPane().add(btnlimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 500, -1, -1));
+        getContentPane().add(btnreporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 520, 100, 40));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Movimiento:");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 130, 110, 30));
+
+        lblpasos.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblpasos.setForeground(new java.awt.Color(255, 255, 255));
+        lblpasos.setText("0");
+        getContentPane().add(lblpasos, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 130, 80, 30));
+
+        lblmin.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblmin.setForeground(new java.awt.Color(255, 255, 255));
+        lblmin.setText("00");
+        getContentPane().add(lblmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 130, 20, 30));
+
+        lblseg.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblseg.setForeground(new java.awt.Color(255, 255, 255));
+        lblseg.setText("00");
+        getContentPane().add(lblseg, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 130, 30, 30));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Tiempo:");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 130, 70, -1));
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText(":");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 130, 20, 30));
+
+        jLabel7.setFont(new java.awt.Font("Segoe Print", 1, 24)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setText("PRACTICA #2");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 10, 200, 40));
 
         jLabel2.setBackground(new java.awt.Color(102, 102, 102));
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -314,8 +362,6 @@ public class View extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Archivo: " + archivo.getName() + ", cargado correctamente!", "Carga", JOptionPane.INFORMATION_MESSAGE);
             jtxtUrl.setText(archivo.getAbsolutePath());
         }
-
-
     }//GEN-LAST:event_btnexaminarMouseClicked
 
     private void btnordenarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnordenarMouseEntered
@@ -335,9 +381,9 @@ public class View extends javax.swing.JFrame {
 //Metodo que carga los datos del CSV a la variable texto-----------------------------------------------------------------
     static String cargaDatos(File f) throws IOException {
 
+        movimientos = 0;
         String texto = "";
         BufferedReader br = null;
-
         try {
             br = new BufferedReader(new FileReader(f));
             String linea = br.readLine();
@@ -396,7 +442,7 @@ public class View extends javax.swing.JFrame {
 
 
     private void btngenerarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btngenerarMouseClicked
-        //METODO PARA GENERAR LA GRAFICA________________________________________/////////////////////////////////////////////////////////
+        btnreporte.setEnabled(false);
         try {
             //Cargar los datos en un texto string 
             String tx = cargaDatos(archivo);
@@ -404,6 +450,9 @@ public class View extends javax.swing.JFrame {
 
             //Convertir los datos en una matriz de String
             m = CrearMatriz(tx);
+            mdesordenada = CrearMatriz(tx);
+            valorx = m[0][0];
+            valory = m[0][1];
             for (int i = 1; i < m.length; i++) {
                 for (int j = 0; j < m[0].length; j++) {
                     System.out.print(m[i][j] + " ");
@@ -446,21 +495,23 @@ public class View extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_rbtnInsertionActionPerformed
 
-//METODO ORDENAR MATRIZ EN BURBBLE SORT-----------------------------------------------------------------------------
+//METODO ORDENAR MATRIZ EN BURBBLE SORT DESCENDENTE-----------------------------------------------------------------------------
     public void ordenarMatrizBurbble() throws InterruptedException {
-
         hilo = new Thread() {
             @Override
             public void run() {
+                int editar = 1;
                 for (int i = 1; i < cantidad.length; i++) {
-                    System.out.print(cantidad[i] + nombre[i]);
-                    generarGrafica();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    // System.out.print(cantidad[i] + nombre[i]);
+
+                    editar = 0;
                     for (int j = 1; j < cantidad.length - 1; j++) {
+                        generarGrafica();
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         if (cantidad[j] < cantidad[j + 1]) {
                             //Intercambio de valores enteros
                             Integer temp = cantidad[j];
@@ -470,67 +521,155 @@ public class View extends javax.swing.JFrame {
                             String tempnombre = nombre[j];
                             nombre[j] = nombre[j + 1];
                             nombre[j + 1] = tempnombre;
+                            editar = 1;
+                            movimientos++;
                         }
+                        limpiarJpanel();
+                        lblpasos.setText(Integer.toString(movimientos));
+                        // System.out.println("Movimiento: " + movimientos);
                     }
-                    limpiarJpanel();
+                    if (editar < 1) {
+                        break;
+                    }
+                }
+                tiempoGrafica = false;
+                reloj.stop();
+                JOptionPane.showMessageDialog(null, "Ordenamiento finalizado con: " + movimientos + " movimientos!!!", "Grafica Ordenada", JOptionPane.INFORMATION_MESSAGE);
+                btnreporte.setEnabled(true);
+            }
+        };
+        hilo.start();
+    }
+
+    //Metodo de ordenamiento burbuja en modo Ascendente---------------------------------------------------------------------------
+    public void ordenarMatrizBurbbleAsc() throws InterruptedException {
+        hilo = new Thread() {
+            @Override
+            public void run() {
+                int editar = 1;
+                for (int i = 1; i < cantidad.length; i++) {
+                    // System.out.print(cantidad[i] + nombre[i]);
+
+                    editar = 0;
+                    for (int j = 1; j < cantidad.length - 1; j++) {
+                        generarGrafica();
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        if (cantidad[j] > cantidad[j + 1]) {
+                            //Intercambio de valores enteros
+                            Integer temp = cantidad[j];
+                            cantidad[j] = cantidad[j + 1];
+                            cantidad[j + 1] = temp;
+                            //Intercambio de nombres
+                            String tempnombre = nombre[j];
+                            nombre[j] = nombre[j + 1];
+                            nombre[j + 1] = tempnombre;
+                            editar = 1;
+                            movimientos++;
+                        }
+                        limpiarJpanel();
+                        lblpasos.setText(Integer.toString(movimientos));
+                        // System.out.println("Movimiento: " + movimientos);
+                    }
+                    if (editar < 1) {
+                        break;
+                    }
+                    // movimientos++;
+
+                }
+                tiempoGrafica = false;
+                reloj.stop();
+                JOptionPane.showMessageDialog(null, "Ordenamiento finalizado con: " + movimientos + " movimientos!!!", "Grafica Ordenada", JOptionPane.INFORMATION_MESSAGE);
+                btnreporte.setEnabled(true);
+            }
+        };
+        hilo.start();
+    }
+
+    //Metodo de conteo de reloj----------------------------------------------------------------------------------------------------
+    public void relojito() throws InterruptedException {
+        tiempoGrafica = true;
+        reloj = new Thread() {
+            @Override
+            public void run() {
+                while (tiempoGrafica) {
+                    int min = 0;
+                    int seg = 0;
+                    for (int i = 1; i < 60; i++) {
+                        for (int j = 1; j < 61; j++) {
+                            try {
+                                sleep(1000);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            System.out.println(min + " " + seg);
+                            lblmin.setText("0" + Integer.toString(min));
+                            lblseg.setText(Integer.toString(seg));
+                            seg++;
+                        }
+                        seg = 0;
+                        min++;
+                    }
                 }
             }
         };
-        
-        hilo.start();
+        reloj.start();
     }
-    //Metodo para generar la gráfica 
 
+    //Metodo para generar la gráfica---------------------------------------------------------------------------------------------- 
     public void generarGrafica() {
-
         DefaultCategoryDataset datos = new DefaultCategoryDataset();
-
         for (int i = 1; i < cantidad.length; i++) {
             datos.setValue(cantidad[i], nombre[i], " ");
         }
-
-        JFreeChart grafica_barras = ChartFactory.createBarChart("Habitantes", "Paises", "Cantidad", datos, PlotOrientation.VERTICAL, true, true, false);
-
+        JFreeChart grafica_barras = ChartFactory.createBarChart("Grafica de Datos", valorx, valory, datos, PlotOrientation.VERTICAL, true, true, false);
         chpanel = new ChartPanel(grafica_barras);
-
         chpanel.setMouseWheelEnabled(true);
         chpanel.setPreferredSize(new Dimension(550, 400));
-
         jpgrafica.add(chpanel, BorderLayout.NORTH);
-
         pack();
         repaint();
-        
-
-        System.out.println("se genero la grafica");
-
+        //System.out.println("se genero la grafica");
     }
+//Metodo para limpiar el jpanel y mostrar la grafica nueva-----------------------------------------------------------------------
 
     void limpiarJpanel() {
         jpgrafica.removeAll();
         jpgrafica.revalidate();
     }
-
+//Boton que comienza los hilos del ordenamiento y del tiempo---------------------------------------------------------------------
     private void btnordenarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnordenarMouseClicked
 
-        try {
-
-            ordenarMatrizBurbble();
-
+        if (rbtnasc.isSelected()) {
+            try {
+            ordenarMatrizBurbbleAsc();
+            relojito();
         } catch (InterruptedException ex) {
             Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
         }
+            
+        }else if (rbtndesc.isSelected()) {
+            try {
+            ordenarMatrizBurbble();
+            relojito();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }else{
+        JOptionPane.showMessageDialog(null,  "Seleccione un valor de ordenamiento","Error de Seleccion", JOptionPane.WARNING_MESSAGE);
+        }
+        
+
 
     }//GEN-LAST:event_btnordenarMouseClicked
 
-    private void btnlimpiarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnlimpiarMouseClicked
-        jpgrafica.removeAll();
-        jpgrafica.revalidate();
-        System.out.println("se limpia");
-
+    private void btnreporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnreporteMouseClicked
 
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnlimpiarMouseClicked
+    }//GEN-LAST:event_btnreporteMouseClicked
 
     /**
      * @param args the command line arguments
@@ -572,11 +711,15 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel btngenerar;
     private javax.swing.ButtonGroup btngroupDireccion;
     private javax.swing.ButtonGroup btngroupMetodo;
-    private javax.swing.JButton btnlimpiar;
     private javax.swing.JLabel btnordenar;
+    private javax.swing.JButton btnreporte;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -586,6 +729,9 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jlbtitulo2;
     protected static javax.swing.JPanel jpgrafica;
     private javax.swing.JTextField jtxtUrl;
+    private javax.swing.JLabel lblmin;
+    private javax.swing.JLabel lblpasos;
+    private javax.swing.JLabel lblseg;
     private javax.swing.JRadioButton rbtnBubble;
     private javax.swing.JRadioButton rbtnInsertion;
     private javax.swing.JRadioButton rbtnasc;
