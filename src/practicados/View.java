@@ -47,6 +47,7 @@ public class View extends javax.swing.JFrame {
     protected static ChartPanel chpanel;
     protected static Boolean tiempoGrafica;
     protected static String nombreAlgoritmo;
+    protected static String nombreAchivo;
 
     public View() {
         initComponents();
@@ -97,7 +98,7 @@ public class View extends javax.swing.JFrame {
         jlbtitulo.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jlbtitulo.setForeground(new java.awt.Color(255, 255, 255));
         jlbtitulo.setText("Grafico");
-        getContentPane().add(jlbtitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, 140, 30));
+        getContentPane().add(jlbtitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 170, 30));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/practicados/img/1.png"))); // NOI18N
         jLabel3.setText("jLabel3");
@@ -751,6 +752,8 @@ public class View extends javax.swing.JFrame {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
             nombreAlgoritmo = "Burbble Sort / Burbuja Ascendente";
+            nombreAchivo = "BurbbleSortAsc";
+            jlbtitulo.setText("Burbble Sort");
 
         } else if (rbtndesc.isSelected() && rbtnBubble.isSelected()) {
             try {
@@ -760,6 +763,8 @@ public class View extends javax.swing.JFrame {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
             nombreAlgoritmo = "Burbble Sort / Burbuja Descendente";
+            nombreAchivo = "BurbbleSortDesc";
+            jlbtitulo.setText("Burbble Sort");
         } else if (rbtnasc.isSelected() && rbtnInsertion.isSelected()) {
             try {
                 ordenarMatrizInsertionAsc();
@@ -768,6 +773,8 @@ public class View extends javax.swing.JFrame {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
             nombreAlgoritmo = "Insertion Sort / Inserción Ascendente";
+            nombreAchivo = "InsertionSortAsc";
+            jlbtitulo.setText("Insertion Sort");
         } else if (rbtndesc.isSelected() && rbtnInsertion.isSelected()) {
             try {
                 ordenarMatrizInsertionDesc();
@@ -776,6 +783,8 @@ public class View extends javax.swing.JFrame {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
             nombreAlgoritmo = "Insertion Sort / Inserción Descendente";
+            nombreAchivo = "InsertionSortDesc";
+            jlbtitulo.setText("Insertion Sort");
         } else {
             JOptionPane.showMessageDialog(null, "Seleccione valores de ordenamiento...", "Error de Seleccion", JOptionPane.WARNING_MESSAGE);
         }
@@ -799,7 +808,7 @@ public class View extends javax.swing.JFrame {
         FileWriter escritor = null;
 
         try {
-            archivoHtml = new File("Reporte.html");
+            archivoHtml = new File(nombreAchivo+".html");
             escritor = new FileWriter(archivoHtml);
 
             String contenido = "<!DOCTYPE html>"
@@ -946,7 +955,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JLabel jlbtitulo;
+    protected static javax.swing.JLabel jlbtitulo;
     private javax.swing.JLabel jlbtitulo1;
     private javax.swing.JLabel jlbtitulo2;
     protected static javax.swing.JPanel jpgrafica;
