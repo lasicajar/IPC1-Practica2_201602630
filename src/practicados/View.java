@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +46,7 @@ public class View extends javax.swing.JFrame {
     protected static String nombre[];
     protected static ChartPanel chpanel;
     protected static Boolean tiempoGrafica;
+    protected static String nombreAlgoritmo;
 
     public View() {
         initComponents();
@@ -564,7 +566,7 @@ public class View extends javax.swing.JFrame {
                             Integer temp = cantidad[j];
                             cantidad[j] = cantidad[j + 1];
                             cantidad[j + 1] = temp;
-                           
+
                             //Intercambio de nombres
                             String tempnombre = nombre[j];
                             nombre[j] = nombre[j + 1];
@@ -598,37 +600,36 @@ public class View extends javax.swing.JFrame {
             public void run() {
                 int editar = 1;
                 for (int i = 2; i < cantidad.length; i++) {
-                   
+
                     int aux = cantidad[i];
                     String auxnom = nombre[i];
-                    
+
                     for (int j = i; j > 1; j--) {
                         generarGrafica();
                         try {
                             Thread.sleep(200);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-                        } 
-                        if (cantidad[j]<cantidad[j-1]) {
+                        }
+                        if (cantidad[j] < cantidad[j - 1]) {
                             aux = cantidad[j];
-                            cantidad[j]=cantidad[j-1];
-                            cantidad[j-1]=aux;
-                            
+                            cantidad[j] = cantidad[j - 1];
+                            cantidad[j - 1] = aux;
+
                             auxnom = nombre[j];
                             nombre[j] = nombre[j - 1];
                             nombre[j - 1] = auxnom;
-                           
+
                             movimientos++;
                         }
                         limpiarJpanel();
                         lblpasos.setText(Integer.toString(movimientos));
                     }
 
-                    
                 }
                 for (int i = 0; i < cantidad.length; i++) {
-                    System.out.println(nombre[i]+" "+ cantidad[i]);
-                                       
+                    System.out.println(nombre[i] + " " + cantidad[i]);
+
                 }
                 tiempoGrafica = false;
                 reloj.stop();
@@ -638,7 +639,7 @@ public class View extends javax.swing.JFrame {
         };
         hilo.start();
     }
-    
+
     //Metodo de ordenamiento Inserción en modo Descendente---------------------------------------------------------------------------
     public void ordenarMatrizInsertionDesc() throws InterruptedException {
         hilo = new Thread() {
@@ -646,37 +647,36 @@ public class View extends javax.swing.JFrame {
             public void run() {
                 int editar = 1;
                 for (int i = 2; i < cantidad.length; i++) {
-                   
+
                     int aux = cantidad[i];
                     String auxnom = nombre[i];
-                    
+
                     for (int j = i; j > 1; j--) {
                         generarGrafica();
                         try {
                             Thread.sleep(200);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-                        } 
-                        if (cantidad[j]>cantidad[j-1]) {
+                        }
+                        if (cantidad[j] > cantidad[j - 1]) {
                             aux = cantidad[j];
-                            cantidad[j]=cantidad[j-1];
-                            cantidad[j-1]=aux;
-                            
+                            cantidad[j] = cantidad[j - 1];
+                            cantidad[j - 1] = aux;
+
                             auxnom = nombre[j];
                             nombre[j] = nombre[j - 1];
                             nombre[j - 1] = auxnom;
-                           
+
                             movimientos++;
                         }
                         limpiarJpanel();
                         lblpasos.setText(Integer.toString(movimientos));
                     }
 
-                    
                 }
                 for (int i = 0; i < cantidad.length; i++) {
-                    System.out.println(nombre[i]+" "+ cantidad[i]);
-                                       
+                    System.out.println(nombre[i] + " " + cantidad[i]);
+
                 }
                 tiempoGrafica = false;
                 reloj.stop();
@@ -732,6 +732,7 @@ public class View extends javax.swing.JFrame {
         repaint();
         //System.out.println("se genero la grafica");
     }
+    
 //Metodo para limpiar el jpanel y mostrar la grafica nueva-----------------------------------------------------------------------
 
     void limpiarJpanel() {
@@ -741,49 +742,156 @@ public class View extends javax.swing.JFrame {
 //Boton que comienza los hilos del ordenamiento y del tiempo---------------------------------------------------------------------
     private void btnordenarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnordenarMouseClicked
         movimientos = 0;
-                    
-        if (rbtnasc.isSelected()&&rbtnBubble.isSelected()) {
+
+        if (rbtnasc.isSelected() && rbtnBubble.isSelected()) {
             try {
                 ordenarMatrizBurbbleAsc();
                 relojito();
             } catch (InterruptedException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
+            nombreAlgoritmo = "Burbble Sort / Burbuja Ascendente";
 
-        } else if (rbtndesc.isSelected()&&rbtnBubble.isSelected()) {
+        } else if (rbtndesc.isSelected() && rbtnBubble.isSelected()) {
             try {
                 ordenarMatrizBurbble();
                 relojito();
             } catch (InterruptedException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else if (rbtnasc.isSelected()&&rbtnInsertion.isSelected()) {
+            nombreAlgoritmo = "Burbble Sort / Burbuja Descendente";
+        } else if (rbtnasc.isSelected() && rbtnInsertion.isSelected()) {
             try {
                 ordenarMatrizInsertionAsc();
                 relojito();
             } catch (InterruptedException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else if (rbtndesc.isSelected()&&rbtnInsertion.isSelected()) {
+            nombreAlgoritmo = "Insertion Sort / Inserción Ascendente";
+        } else if (rbtndesc.isSelected() && rbtnInsertion.isSelected()) {
             try {
                 ordenarMatrizInsertionDesc();
                 relojito();
             } catch (InterruptedException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        else {
+            nombreAlgoritmo = "Insertion Sort / Inserción Descendente";
+        } else {
             JOptionPane.showMessageDialog(null, "Seleccione valores de ordenamiento...", "Error de Seleccion", JOptionPane.WARNING_MESSAGE);
         }
-        
 
 
     }//GEN-LAST:event_btnordenarMouseClicked
 
     private void btnreporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnreporteMouseClicked
 
-        // TODO add your handling code here:
+        try {
+            reporte();
+        } catch (IOException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }//GEN-LAST:event_btnreporteMouseClicked
+
+    public static void reporte() throws IOException {
+
+        File archivoHtml;
+        FileWriter escritor = null;
+
+        try {
+            archivoHtml = new File("Reporte.html");
+            escritor = new FileWriter(archivoHtml);
+
+            String contenido = "<!DOCTYPE html>"
+                    + "<html lang=\"en\">"
+                    + "<head>"
+                    + "<meta charset=\"UTF-8\">"
+                    + "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">"
+                    + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+                    + "<title>Reporte de Ordenamiento</title>"
+                    + "</head>"
+                    + "</head>"
+                    + "<h1 style=\"color: #5e9ca0; text-align: center;\">Reporte de Algoritmo</h1>"
+                    + "<h2 style=\"color: #2e6c80; text-align: center;\">Lusvin Alexander Sicajá Ramírez 201602630</h2>"
+                    + "<h2 style=\"color: #2e6c80;\">Resultados</h2>"
+                    //Genera la tabla del tipo de algoritmo utilizado
+                    + "<table style=\"border-collapse: collapse; width: 30%;\" border=\"1\">"
+                    + "<tbody>"
+                    + "<tr>"
+                    + "<td style=\"width: 50%;\">Algoritmo Utilizado:</td>"
+                    + "<td style=\"width: 50%;\">" + nombreAlgoritmo + "</td>"
+                    + "</tr>"
+                    + "</tbody>"
+                    + "</table>"
+                    //Genera la tabla del tiempo transcurrido
+                    + "<table style=\"border-collapse: collapse; width: 30%;\" border=\"1\">"
+                    + "<tbody>"
+                    + "<tr>"
+                    + "<td style=\"width: 50%;\">Tiempo Transcurrido:</td>"
+                    + "<td style=\"width: 50%;\">" + lblmin.getText() + " min y " + "\n" + lblseg.getText() + " seg" + "</td>"
+                    + "</tr>"
+                    + "</tbody>"
+                    + "</table>"
+                    //Genera la tabla de la cantidad de pasos realizados
+                    + "<table style=\"border-collapse: collapse; width: 30%;\" border=\"1\">"
+                    + "<tbody>"
+                    + "<tr>"
+                    + "<td style=\"width: 50%;\">Cantidad de Movimientos:</td>"
+                    + "<td style=\"width: 50%;\">" + lblpasos.getText() + "</td>"
+                    + "</tr>"
+                    + "</tbody>"
+                    + "</table>"
+                    //Genera la tabla de datos no Ordenados
+                    + "<h2 style=\"color: #2e6c80;\">Tabla de Datos no Ordenados:</h2>"
+                    + "<table class=\"editorDemoTable\" style=\"width: 414px;\">"
+                    + "<tbody>"
+                    + "<tr>"
+                    + "<td style=\"width: 172.109px;\">" + valorx + "</td>"
+                    + "<td style=\"width: 225.891px;\">" + valory + "</td>"
+                    + "</tr>";
+
+            for (int i = 1; i < mdesordenada.length; i++) {
+                contenido += "<tr>";
+                contenido += "<td style=\"width: 172.109px;\">" + mdesordenada[i][0] + "</td>";
+                contenido += "<td style=\"width: 225.891px;\">" + mdesordenada[i][1] + "</td>";
+                contenido += "</tr>";
+                System.out.println();
+            }
+            contenido += "</tbody>"
+                    + "</table>";
+
+            //Genera la tabla de datos  Ordenados
+            contenido += "<h2 style=\"color: #2e6c80;\">Tabla de Datos Ordenados:</h2>"
+                    + "<table class=\"editorDemoTable\" style=\"width: 414px;\">"
+                    + "<tbody>"
+                    + "<tr>"
+                    + "<td style=\"width: 172.109px;\">" + valorx + "</td>"
+                    + "<td style=\"width: 225.891px;\">" + valory + "</td>"
+                    + "</tr>";
+
+            for (int i = 1; i < cantidad.length; i++) {
+                contenido += "<tr>";
+                contenido += "<td style=\"width: 172.109px;\">" + nombre[i] + "</td>";
+                contenido += "<td style=\"width: 225.891px;\">" + cantidad[i] + "</td>";
+                contenido += "</tr>";
+                System.out.println();
+            }
+            contenido += "</tbody>"
+                    + "</table>"
+                    + "<p><strong>Práctica #2 de IPC1 - Sección F</strong></p>"
+                    + "</body>"
+                    + "</html>";
+
+            escritor.write(contenido);
+            JOptionPane.showMessageDialog(null, "Reporte generado correctamente", "Reporte", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Exception e) {
+            System.out.println("Error al generar reporte...");
+        } finally {
+            escritor.close();
+        }
+
+    }
 
     /**
      * @param args the command line arguments
@@ -843,9 +951,9 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jlbtitulo2;
     protected static javax.swing.JPanel jpgrafica;
     private javax.swing.JTextField jtxtUrl;
-    private javax.swing.JLabel lblmin;
-    private javax.swing.JLabel lblpasos;
-    private javax.swing.JLabel lblseg;
+    protected static javax.swing.JLabel lblmin;
+    protected static javax.swing.JLabel lblpasos;
+    protected static javax.swing.JLabel lblseg;
     private javax.swing.JRadioButton rbtnBubble;
     private javax.swing.JRadioButton rbtnInsertion;
     private javax.swing.JRadioButton rbtnasc;
